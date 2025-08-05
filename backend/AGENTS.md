@@ -12,6 +12,7 @@ This file defines conventions for backend code.
 ## Data Models
 
 - Define dedicated request DTO classes for each incoming API payload.
+- Validate all incoming request DTOs to ensure they are neither empty nor null.
 - Services must convert request DTOs into entity models before repository interaction.
 - Service methods should return domain models representing business concepts.
 - Controllers must return these domain models in API responses.
