@@ -28,7 +28,7 @@ class CustomerControllerTest {
     @MockBean
     private CustomerService customerService;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
     @Test
     void createCustomerReturnsCreatedCustomer() throws Exception {
