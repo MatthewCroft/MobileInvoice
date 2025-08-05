@@ -42,7 +42,7 @@ class InvoiceIntegrationTest {
     @Test
     void createUpdateDeleteInvoiceFlow() throws Exception {
         UserEntity user = new UserEntity();
-        user.setEmail("test@example.com");
+        user.setEmail("test1@example.com");
         user.setPasswordHash("pw");
         user = userRepository.save(user);
         UUID userId = user.getId();
