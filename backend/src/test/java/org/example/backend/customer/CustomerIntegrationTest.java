@@ -49,6 +49,14 @@ class CustomerIntegrationTest {
                 .andReturn().getResponse().getContentAsString();
         String customerId = objectMapper.readTree(createResponse).get("id").asText();
 
+        mockMvc.perform(get("/user/{userId}/customer", userId.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(customerId));
+
+        mockMvc.perform(get("/user/{userId}/customer/{customerId}", userId.toString(), customerId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(customerId));
+
         UpdateCustomerRequest updateRequest = new UpdateCustomerRequest("Jane", "456", "jane@example.com", "Road");
         mockMvc.perform(put("/user/{userId}/customer/{customerId}", userId.toString(), customerId)
                         .contentType(MediaType.APPLICATION_JSON)

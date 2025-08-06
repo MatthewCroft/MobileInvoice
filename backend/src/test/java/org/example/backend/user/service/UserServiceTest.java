@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -62,5 +63,33 @@ class UserServiceTest {
 
         verify(userRepository).delete(entity);
         assertEquals(id.toString(), result.id());
+    }
+
+    @Test
+    void getUserReturnsDomain() {
+        UUID id = UUID.randomUUID();
+        UserEntity entity = new UserEntity();
+        entity.setId(id);
+        entity.setEmail("email@example.com");
+        when(userRepository.findById(id)).thenReturn(Optional.of(entity));
+
+        User result = userService.getUser(id);
+
+        assertEquals(id.toString(), result.id());
+    }
+
+    @Test
+    void getUsersReturnsAllUsers() {
+        UserEntity e1 = new UserEntity();
+        e1.setId(UUID.randomUUID());
+        e1.setEmail("a@example.com");
+        UserEntity e2 = new UserEntity();
+        e2.setId(UUID.randomUUID());
+        e2.setEmail("b@example.com");
+        when(userRepository.findAll()).thenReturn(List.of(e1, e2));
+
+        List<User> result = userService.getUsers();
+
+        assertEquals(2, result.size());
     }
 }

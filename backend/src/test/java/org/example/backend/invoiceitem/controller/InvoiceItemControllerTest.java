@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -78,5 +79,34 @@ class InvoiceItemControllerTest {
                         userId.toString(), customerId.toString(), invoiceId.toString(), itemId.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(itemId.toString()));
+    }
+
+    @Test
+    void getItemReturnsItem() throws Exception {
+        UUID userId = UUID.randomUUID();
+        UUID customerId = UUID.randomUUID();
+        UUID invoiceId = UUID.randomUUID();
+        UUID itemId = UUID.randomUUID();
+        InvoiceItem response = new InvoiceItem(itemId.toString(), "d", 1, BigDecimal.ONE, BigDecimal.ONE);
+        given(invoiceItemService.getItem(userId, customerId, invoiceId, itemId)).willReturn(response);
+
+        mockMvc.perform(get("/user/{userId}/customer/{customerId}/invoice/{invoiceId}/item/{itemId}",
+                        userId.toString(), customerId.toString(), invoiceId.toString(), itemId.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(itemId.toString()));
+    }
+
+    @Test
+    void getItemsReturnsList() throws Exception {
+        UUID userId = UUID.randomUUID();
+        UUID customerId = UUID.randomUUID();
+        UUID invoiceId = UUID.randomUUID();
+        InvoiceItem i1 = new InvoiceItem("1", "a", 1, BigDecimal.ONE, BigDecimal.ONE);
+        InvoiceItem i2 = new InvoiceItem("2", "b", 1, BigDecimal.ONE, BigDecimal.ONE);
+        given(invoiceItemService.getItems(userId, customerId, invoiceId)).willReturn(List.of(i1, i2));
+
+        mockMvc.perform(get("/user/{userId}/customer/{customerId}/invoice/{invoiceId}/item", userId.toString(), customerId.toString(), invoiceId.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value("1"));
     }
 }

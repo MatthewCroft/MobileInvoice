@@ -76,6 +76,14 @@ class InvoiceItemIntegrationTest {
                 .andReturn().getResponse().getContentAsString();
         String itemId = objectMapper.readTree(createResponse).get("id").asText();
 
+        mockMvc.perform(get("/user/{userId}/customer/{customerId}/invoice/{invoiceId}/item", userId.toString(), customerId.toString(), invoiceId.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(itemId));
+
+        mockMvc.perform(get("/user/{userId}/customer/{customerId}/invoice/{invoiceId}/item/{itemId}", userId.toString(), customerId.toString(), invoiceId.toString(), itemId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(itemId));
+
         UpdateInvoiceItemRequest updateRequest = new UpdateInvoiceItemRequest("new", 3, BigDecimal.ONE);
         mockMvc.perform(put("/user/{userId}/customer/{customerId}/invoice/{invoiceId}/item/{itemId}", userId.toString(), customerId.toString(), invoiceId.toString(), itemId)
                         .contentType(MediaType.APPLICATION_JSON)

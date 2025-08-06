@@ -8,6 +8,7 @@ import org.example.backend.customer.repository.CustomerRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -79,5 +80,38 @@ class CustomerServiceTest {
 
         verify(customerRepository).delete(entity);
         assertEquals(customerId.toString(), result.id());
+    }
+
+    @Test
+    void getCustomerReturnsDomain() {
+        UUID userId = UUID.randomUUID();
+        UUID customerId = UUID.randomUUID();
+        CustomerEntity entity = new CustomerEntity();
+        entity.setId(customerId);
+        entity.setUserId(userId);
+        entity.setName("Name");
+        when(customerRepository.findByIdAndUserId(customerId, userId)).thenReturn(Optional.of(entity));
+
+        Customer result = customerService.getCustomer(userId, customerId);
+
+        assertEquals(customerId.toString(), result.id());
+    }
+
+    @Test
+    void getCustomersReturnsAll() {
+        UUID userId = UUID.randomUUID();
+        CustomerEntity e1 = new CustomerEntity();
+        e1.setId(UUID.randomUUID());
+        e1.setUserId(userId);
+        e1.setName("A");
+        CustomerEntity e2 = new CustomerEntity();
+        e2.setId(UUID.randomUUID());
+        e2.setUserId(userId);
+        e2.setName("B");
+        when(customerRepository.findAllByUserId(userId)).thenReturn(List.of(e1, e2));
+
+        List<Customer> result = customerService.getCustomers(userId);
+
+        assertEquals(2, result.size());
     }
 }

@@ -13,6 +13,7 @@ import org.mockito.ArgumentCaptor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -116,5 +117,43 @@ class InvoiceServiceTest {
 
         verify(invoiceRepository).delete(entity);
         assertEquals(invoiceId.toString(), result.id());
+    }
+
+    @Test
+    void getInvoiceReturnsDomain() {
+        UUID userId = UUID.randomUUID();
+        UUID customerId = UUID.randomUUID();
+        UUID invoiceId = UUID.randomUUID();
+        InvoiceEntity entity = new InvoiceEntity();
+        entity.setId(invoiceId);
+        entity.setUserId(userId);
+        entity.setCustomerId(customerId);
+        when(invoiceRepository.findByIdAndUserIdAndCustomerId(invoiceId, userId, customerId))
+                .thenReturn(Optional.of(entity));
+
+        Invoice result = invoiceService.getInvoice(userId, customerId, invoiceId);
+
+        assertEquals(invoiceId.toString(), result.id());
+    }
+
+    @Test
+    void getInvoicesReturnsList() {
+        UUID userId = UUID.randomUUID();
+        UUID customerId = UUID.randomUUID();
+        InvoiceEntity e1 = new InvoiceEntity();
+        e1.setId(UUID.randomUUID());
+        e1.setUserId(userId);
+        e1.setCustomerId(customerId);
+        InvoiceEntity e2 = new InvoiceEntity();
+        e2.setId(UUID.randomUUID());
+        e2.setUserId(userId);
+        e2.setCustomerId(customerId);
+        when(userRepository.existsById(userId)).thenReturn(true);
+        when(customerRepository.findByIdAndUserId(customerId, userId)).thenReturn(Optional.of(new CustomerEntity()));
+        when(invoiceRepository.findAllByUserIdAndCustomerId(userId, customerId)).thenReturn(List.of(e1, e2));
+
+        List<Invoice> result = invoiceService.getInvoices(userId, customerId);
+
+        assertEquals(2, result.size());
     }
 }

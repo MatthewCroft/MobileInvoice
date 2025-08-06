@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -74,5 +75,31 @@ class InvoiceControllerTest {
         mockMvc.perform(delete("/user/{userId}/customer/{customerId}/invoice/{invoiceId}", userId.toString(), customerId.toString(), invoiceId.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(invoiceId.toString()));
+    }
+
+    @Test
+    void getInvoiceReturnsInvoice() throws Exception {
+        UUID userId = UUID.randomUUID();
+        UUID customerId = UUID.randomUUID();
+        UUID invoiceId = UUID.randomUUID();
+        Invoice response = new Invoice(invoiceId.toString(), "INV", LocalDate.now(), null, "unpaid", BigDecimal.ONE, BigDecimal.TEN, BigDecimal.TEN, "n");
+        given(invoiceService.getInvoice(userId, customerId, invoiceId)).willReturn(response);
+
+        mockMvc.perform(get("/user/{userId}/customer/{customerId}/invoice/{invoiceId}", userId.toString(), customerId.toString(), invoiceId.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(invoiceId.toString()));
+    }
+
+    @Test
+    void getInvoicesReturnsList() throws Exception {
+        UUID userId = UUID.randomUUID();
+        UUID customerId = UUID.randomUUID();
+        Invoice i1 = new Invoice("1", "INV1", LocalDate.now(), null, "unpaid", BigDecimal.ONE, BigDecimal.TEN, BigDecimal.TEN, "n");
+        Invoice i2 = new Invoice("2", "INV2", LocalDate.now(), null, "unpaid", BigDecimal.ONE, BigDecimal.TEN, BigDecimal.TEN, "n");
+        given(invoiceService.getInvoices(userId, customerId)).willReturn(List.of(i1, i2));
+
+        mockMvc.perform(get("/user/{userId}/customer/{customerId}/invoice", userId.toString(), customerId.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value("1"));
     }
 }

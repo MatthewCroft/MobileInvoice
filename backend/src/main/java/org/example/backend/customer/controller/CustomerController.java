@@ -10,6 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.validation.Valid;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -26,6 +27,21 @@ public class CustomerController {
     public Customer createCustomer(@PathVariable String userId,
                                    @Valid @RequestBody CreateCustomerRequest request) {
         return customerService.createCustomer(UUID.fromString(userId), request);
+    }
+
+    @GetMapping
+    public List<Customer> getCustomers(@PathVariable String userId) {
+        return customerService.getCustomers(UUID.fromString(userId));
+    }
+
+    @GetMapping("/{customerId}")
+    public Customer getCustomer(@PathVariable String userId,
+                                @PathVariable String customerId) {
+        try {
+            return customerService.getCustomer(UUID.fromString(userId), UUID.fromString(customerId));
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+        }
     }
 
     @PutMapping("/{customerId}")
