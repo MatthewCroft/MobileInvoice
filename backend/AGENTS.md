@@ -21,6 +21,7 @@ This file defines conventions for backend code.
 
 - Each layer requires unit tests to verify its behaviour.
 - Provide a Spring Boot integration test that exercises the full request pipeline.
+- When creating tests, ensure entity or model objects set all required fields and use unique test values since data is not cleaned up.
 
 ## API Responses
 
