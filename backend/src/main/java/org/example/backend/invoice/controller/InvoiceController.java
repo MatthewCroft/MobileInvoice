@@ -10,6 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.validation.Valid;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -28,6 +29,27 @@ public class InvoiceController {
                                  @Valid @RequestBody CreateInvoiceRequest request) {
         try {
             return invoiceService.createInvoice(UUID.fromString(userId), UUID.fromString(customerId), request);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+        }
+    }
+
+    @GetMapping
+    public List<Invoice> getInvoices(@PathVariable String userId,
+                                     @PathVariable String customerId) {
+        try {
+            return invoiceService.getInvoices(UUID.fromString(userId), UUID.fromString(customerId));
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+        }
+    }
+
+    @GetMapping("/{invoiceId}")
+    public Invoice getInvoice(@PathVariable String userId,
+                              @PathVariable String customerId,
+                              @PathVariable String invoiceId) {
+        try {
+            return invoiceService.getInvoice(UUID.fromString(userId), UUID.fromString(customerId), UUID.fromString(invoiceId));
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         }

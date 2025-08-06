@@ -9,6 +9,7 @@ import org.example.backend.invoice.repository.InvoiceRepository;
 import org.example.backend.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -67,6 +68,23 @@ public class InvoiceService {
                 .orElseThrow(() -> new IllegalArgumentException("Invoice not found"));
         invoiceRepository.delete(entity);
         return toDomain(entity);
+    }
+
+    public Invoice getInvoice(UUID userId, UUID customerId, UUID invoiceId) {
+        InvoiceEntity entity = invoiceRepository.findByIdAndUserIdAndCustomerId(invoiceId, userId, customerId)
+                .orElseThrow(() -> new IllegalArgumentException("Invoice not found"));
+        return toDomain(entity);
+    }
+
+    public List<Invoice> getInvoices(UUID userId, UUID customerId) {
+        if (!userRepository.existsById(userId)) {
+            throw new IllegalArgumentException("User not found");
+        }
+        customerRepository.findByIdAndUserId(customerId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
+        return invoiceRepository.findAllByUserIdAndCustomerId(userId, customerId).stream()
+                .map(this::toDomain)
+                .toList();
     }
 
     private Invoice toDomain(InvoiceEntity entity) {

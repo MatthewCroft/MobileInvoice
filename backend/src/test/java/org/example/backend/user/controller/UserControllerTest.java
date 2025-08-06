@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -69,5 +70,27 @@ class UserControllerTest {
         mockMvc.perform(delete("/users/" + id))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id.toString()));
+    }
+
+    @Test
+    void getUser() throws Exception {
+        UUID id = UUID.randomUUID();
+        User user = new User(id.toString(), "e@x.com");
+        when(userService.getUser(id)).thenReturn(user);
+
+        mockMvc.perform(get("/users/" + id))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(id.toString()));
+    }
+
+    @Test
+    void getUsers() throws Exception {
+        User u1 = new User("1", "a@b.com");
+        User u2 = new User("2", "c@d.com");
+        when(userService.getUsers()).thenReturn(List.of(u1, u2));
+
+        mockMvc.perform(get("/users"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value("1"));
     }
 }

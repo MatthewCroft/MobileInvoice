@@ -10,6 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.validation.Valid;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -29,6 +30,29 @@ public class InvoiceItemController {
                                   @Valid @RequestBody CreateInvoiceItemRequest request) {
         try {
             return invoiceItemService.createItem(UUID.fromString(userId), UUID.fromString(customerId), UUID.fromString(invoiceId), request);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+        }
+    }
+
+    @GetMapping
+    public List<InvoiceItem> getItems(@PathVariable String userId,
+                                      @PathVariable String customerId,
+                                      @PathVariable String invoiceId) {
+        try {
+            return invoiceItemService.getItems(UUID.fromString(userId), UUID.fromString(customerId), UUID.fromString(invoiceId));
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+        }
+    }
+
+    @GetMapping("/{itemId}")
+    public InvoiceItem getItem(@PathVariable String userId,
+                               @PathVariable String customerId,
+                               @PathVariable String invoiceId,
+                               @PathVariable String itemId) {
+        try {
+            return invoiceItemService.getItem(UUID.fromString(userId), UUID.fromString(customerId), UUID.fromString(invoiceId), UUID.fromString(itemId));
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         }

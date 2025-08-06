@@ -7,6 +7,7 @@ import org.example.backend.customer.entity.CustomerEntity;
 import org.example.backend.customer.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -44,6 +45,18 @@ public class CustomerService {
                 .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
         customerRepository.delete(entity);
         return toDomain(entity);
+    }
+
+    public Customer getCustomer(UUID userId, UUID customerId) {
+        CustomerEntity entity = customerRepository.findByIdAndUserId(customerId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
+        return toDomain(entity);
+    }
+
+    public List<Customer> getCustomers(UUID userId) {
+        return customerRepository.findAllByUserId(userId).stream()
+                .map(this::toDomain)
+                .toList();
     }
 
     private Customer toDomain(CustomerEntity entity) {

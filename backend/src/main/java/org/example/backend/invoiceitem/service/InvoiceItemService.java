@@ -9,6 +9,7 @@ import org.example.backend.invoiceitem.repository.InvoiceItemRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -58,6 +59,22 @@ public class InvoiceItemService {
                 .orElseThrow(() -> new IllegalArgumentException("Item not found"));
         invoiceItemRepository.delete(entity);
         return toDomain(entity);
+    }
+
+    public InvoiceItem getItem(UUID userId, UUID customerId, UUID invoiceId, UUID itemId) {
+        invoiceRepository.findByIdAndUserIdAndCustomerId(invoiceId, userId, customerId)
+                .orElseThrow(() -> new IllegalArgumentException("Invoice not found"));
+        InvoiceItemEntity entity = invoiceItemRepository.findByIdAndInvoiceId(itemId, invoiceId)
+                .orElseThrow(() -> new IllegalArgumentException("Item not found"));
+        return toDomain(entity);
+    }
+
+    public List<InvoiceItem> getItems(UUID userId, UUID customerId, UUID invoiceId) {
+        invoiceRepository.findByIdAndUserIdAndCustomerId(invoiceId, userId, customerId)
+                .orElseThrow(() -> new IllegalArgumentException("Invoice not found"));
+        return invoiceItemRepository.findAllByInvoiceId(invoiceId).stream()
+                .map(this::toDomain)
+                .toList();
     }
 
     private InvoiceItem toDomain(InvoiceItemEntity entity) {

@@ -12,6 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -69,5 +70,29 @@ class CustomerControllerTest {
         mockMvc.perform(delete("/user/{userId}/customer/{customerId}", userId.toString(), customerId.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(customerId.toString()));
+    }
+
+    @Test
+    void getCustomerReturnsCustomer() throws Exception {
+        UUID userId = UUID.randomUUID();
+        UUID customerId = UUID.randomUUID();
+        Customer response = new Customer(customerId.toString(), "Name", null, null, null);
+        given(customerService.getCustomer(userId, customerId)).willReturn(response);
+
+        mockMvc.perform(get("/user/{userId}/customer/{customerId}", userId.toString(), customerId.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(customerId.toString()));
+    }
+
+    @Test
+    void getCustomersReturnsList() throws Exception {
+        UUID userId = UUID.randomUUID();
+        Customer c1 = new Customer("1", "A", null, null, null);
+        Customer c2 = new Customer("2", "B", null, null, null);
+        given(customerService.getCustomers(userId)).willReturn(List.of(c1, c2));
+
+        mockMvc.perform(get("/user/{userId}/customer", userId.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value("1"));
     }
 }

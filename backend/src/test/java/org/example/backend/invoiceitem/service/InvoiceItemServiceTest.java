@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -100,5 +101,43 @@ class InvoiceItemServiceTest {
 
         verify(invoiceItemRepository).delete(entity);
         assertEquals(itemId.toString(), result.id());
+    }
+
+    @Test
+    void getItemReturnsDomain() {
+        UUID userId = UUID.randomUUID();
+        UUID customerId = UUID.randomUUID();
+        UUID invoiceId = UUID.randomUUID();
+        UUID itemId = UUID.randomUUID();
+        when(invoiceRepository.findByIdAndUserIdAndCustomerId(invoiceId, userId, customerId))
+                .thenReturn(Optional.of(new InvoiceEntity()));
+        InvoiceItemEntity entity = new InvoiceItemEntity();
+        entity.setId(itemId);
+        entity.setInvoiceId(invoiceId);
+        when(invoiceItemRepository.findByIdAndInvoiceId(itemId, invoiceId)).thenReturn(Optional.of(entity));
+
+        InvoiceItem result = invoiceItemService.getItem(userId, customerId, invoiceId, itemId);
+
+        assertEquals(itemId.toString(), result.id());
+    }
+
+    @Test
+    void getItemsReturnsList() {
+        UUID userId = UUID.randomUUID();
+        UUID customerId = UUID.randomUUID();
+        UUID invoiceId = UUID.randomUUID();
+        when(invoiceRepository.findByIdAndUserIdAndCustomerId(invoiceId, userId, customerId))
+                .thenReturn(Optional.of(new InvoiceEntity()));
+        InvoiceItemEntity e1 = new InvoiceItemEntity();
+        e1.setId(UUID.randomUUID());
+        e1.setInvoiceId(invoiceId);
+        InvoiceItemEntity e2 = new InvoiceItemEntity();
+        e2.setId(UUID.randomUUID());
+        e2.setInvoiceId(invoiceId);
+        when(invoiceItemRepository.findAllByInvoiceId(invoiceId)).thenReturn(List.of(e1, e2));
+
+        List<InvoiceItem> result = invoiceItemService.getItems(userId, customerId, invoiceId);
+
+        assertEquals(2, result.size());
     }
 }
