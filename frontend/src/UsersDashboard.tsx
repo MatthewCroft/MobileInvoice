@@ -12,7 +12,7 @@ export function UsersDashboard() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    fetch("/users")
+    fetch(`${import.meta.env.VITE_API_URL}/users`)
       .then((res) => res.json())
       .then(setUsers)
       .catch(() => setUsers([]))

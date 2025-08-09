@@ -11,7 +11,7 @@ export function CreateUser() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
 
-    await fetch("/users", {
+    await fetch(`${import.meta.env.VITE_API_URL}/users`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
