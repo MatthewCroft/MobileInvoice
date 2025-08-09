@@ -13,9 +13,8 @@ This document defines conventions for all code in this `frontend` directory.
 - Ensure layouts are responsive, scaling up for larger screens as needed.
 
 ## Testing
+- do not write tests
 
-- Write unit tests for components and hooks using React Testing Library.
-- Provide end-to-end tests, also built with React Testing Library, that exercise user flows.
 
 ## Backend Integration
 
