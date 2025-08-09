@@ -1,12 +1,16 @@
 import './App.css'
-import { Button } from "@/components/ui/button"
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { UsersDashboard } from './pages/UsersDashboard'
+import { CreateUser } from './pages/CreateUser'
 
 function App() {
-
   return (
-      <div className="flex min-h-svh flex-col items-center justify-center">
-          <Button>Click me</Button>
-      </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<UsersDashboard />} />
+        <Route path="/new-user" element={<CreateUser />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
